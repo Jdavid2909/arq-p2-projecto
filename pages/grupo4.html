@@ -15,6 +15,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -218,6 +219,108 @@
     <!-- End Navbar -->
     <div class="container-fluid py-4">
       <div class="row">
+        <div class="row">
+          <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">CPU</p>
+                      <h5 class="font-weight-bolder">
+                        GHz
+                      </h5>
+                      <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder">%</span>
+                        Used
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                      <i class="fas fa-desktop" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">Memory RAM</p>
+                      <h5 class="font-weight-bolder">
+                        MB
+                      </h5>
+                      <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder">%</span>
+                        Used
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                      <i class="fas fa-memory" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">DISC</p>
+                      <h5 class="font-weight-bolder">
+                        GB
+                      </h5>
+                      <p class="mb-0">
+                        <span class="text-danger text-sm font-weight-bolder">%</span>
+                        Used
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
+                      <i class="fas fa-hdd" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-sm-6">
+            <div class="card">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">TEMPERATURE</p>
+                      <h5 class="font-weight-bolder">
+                        C°
+                      </h5>
+                      <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder"></span> 
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
+                      <i class="fas fa-temperature-high" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+        </div>
         <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
           <div class="card">
             <div class="card-body p-3">
@@ -225,11 +328,11 @@
                 <div class="col-8">
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">CPU</p>
-                    <h5 class="font-weight-bolder">
+                    <h5 class="font-weight-bolder"> 
                       GHz
                     </h5>
                     <p class="mb-0">
-                      <span class="text-success text-sm font-weight-bolder">%</span>
+                      <span class="cpuPercentage">%</span>
                       Used
                     </p>
                   </div>
@@ -251,10 +354,10 @@
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">Memory RAM</p>
                     <h5 class="font-weight-bolder">
-                      MB
+                        MB
                     </h5>
                     <p class="mb-0">
-                      <span class="text-success text-sm font-weight-bolder">%</span>
+                      <span class="text-success text-sm font-weight-bolder"> %</span>
                       Used
                     </p>
                   </div>
@@ -276,7 +379,7 @@
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">DISC</p>
                     <h5 class="font-weight-bolder">
-                      GB
+                       %
                     </h5>
                     <p class="mb-0">
                       <span class="text-danger text-sm font-weight-bolder">%</span>
@@ -301,7 +404,7 @@
                   <div class="numbers">
                     <p class="text-sm mb-0 text-uppercase font-weight-bold">TEMPERATURE</p>
                     <h5 class="font-weight-bolder">
-                      C°
+                        C°
                     </h5>
                     <p class="mb-0">
                       <span class="text-success text-sm font-weight-bolder"></span> 
