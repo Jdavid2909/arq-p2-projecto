@@ -20,7 +20,6 @@ client.onConnectionLost = function (responseObject) {
 /*################################################################################################
 let dataCache =  esto lo almaceno en un etiqueta laben, o como mdoificar un equiqueta input con js y el uso del api
 */
-let dataCPU = 0;
 
 client.onMessageArrived = function (message) {
 	let destination = message.destinationName;
