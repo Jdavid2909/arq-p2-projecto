@@ -13,8 +13,8 @@ import getpass
 #Hive
 BROKER = 'broker.hivemq.com'
 PORT = 1883
-TOPIC_DATA = "grupo4"
-TOPIC_ALERT = "grupo4"
+TOPIC = "grupo4"
+
 # generate client ID with pub prefix randomly
 CLIENT_ID = "python-mqtt-tcp-pub-sub-{id}".format(id=random.randint(0, 1000))
 FLAG_CONNECTED = 0
@@ -25,8 +25,7 @@ def on_connect(client, userdata, flags, rc):
     if rc == 0:
         FLAG_CONNECTED = 1
         print("Connected to MQTT Broker!")
-        client.subscribe(TOPIC_DATA)
-        client.subscribe(TOPIC_ALERT)
+        client.subscribe(TOPIC)
     else:
         print("Failed to connect, return code {rc}".format(rc=rc), )
 
