@@ -1,5 +1,6 @@
 //var wsbroker = "192.168.0.3";  //mqtt websocket enabled broker
 //var wsbroker = "localhost";
+var topic = "grupo4";
 var wsbroker = "broker.hivemq.com";
 
 //var wsport = 8083 // port for above
