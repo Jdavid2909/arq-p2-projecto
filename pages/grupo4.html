@@ -24,6 +24,18 @@
   <title>
     Grupo 4
   </title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+  <script type="text/javascript" src="../js/grupo4/mqttclient.js"></script>
+  <script>
+    initMqtt();
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
+  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <title>
+    Grupo 4
+  </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
   <!-- Nucleo Icons -->
@@ -227,12 +239,9 @@
                   <div class="col-8">
                     <div class="numbers">
                       <p class="text-sm mb-0 text-uppercase font-weight-bold">CPU</p>
-                      <h5 class="font-weight-bolder">
-                        GHz
-                      </h5>
+                      <h5 class="mb-0" id="cpuValue">  0% </h5>
                       <p class="mb-0">
-                        <span class="text-success text-sm font-weight-bolder">%</span>
-                        Used
+                        <span class="text-success text-sm font-weight-bolder">PORCENTAJE DE USO</span>
                       </p>
                     </div>
                   </div>
@@ -252,12 +261,11 @@
                   <div class="col-8">
                     <div class="numbers">
                       <p class="text-sm mb-0 text-uppercase font-weight-bold">Memory RAM</p>
-                      <h5 class="font-weight-bolder">
-                        MB
+                      <h5 class="mb-0"id="almcValue">
+                               0%
                       </h5>
                       <p class="mb-0">
-                        <span class="text-success text-sm font-weight-bolder">%</span>
-                        Used
+                        <span class="text-success text-sm font-weight-bolder">PORCENTAJE DE USO</span>
                       </p>
                     </div>
                   </div>
@@ -277,12 +285,12 @@
                   <div class="col-8">
                     <div class="numbers">
                       <p class="text-sm mb-0 text-uppercase font-weight-bold">DISC</p>
-                      <h5 class="font-weight-bolder">
-                        GB
+                      <h5 class="mb-0" id="tptValue">
+                        0GB
                       </h5>
                       <p class="mb-0">
-                        <span class="text-danger text-sm font-weight-bolder">%</span>
-                        Used
+                        <span class="text-danger text-sm font-weight-bolder">PORCENTAJE DE USO</span>
+                      
                       </p>
                     </div>
                   </div>
@@ -301,127 +309,314 @@
                 <div class="row">
                   <div class="col-8">
                     <div class="numbers">
-                      <p class="text-sm mb-0 text-uppercase font-weight-bold">TEMPERATURE</p>
-                      <h5 class="font-weight-bolder">
-                        C°
-                      </h5>
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">CACHE</p>
+                      <h5 class="mb-0" id="cacheValue"> 0% </h5>
                       <p class="mb-0">
-                        <span class="text-success text-sm font-weight-bolder"></span> 
+                        <span class="text-success text-sm font-weight-bolder">PORCENTAJE DE USO</span> 
                       </p>
                     </div>
                   </div>
                   <div class="col-4 text-end">
                     <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
-                      <i class="fas fa-temperature-high" aria-hidden="true"></i>
+                      <i class="fas fa-hdd" aria-hidden="true"></i>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">CPU</p>
-                    <h5 class="font-weight-bolder"> 
-                      GHz
-                    </h5>
-                    <p class="mb-0">
-                      <span class="cpuPercentage">%</span>
-                      Used
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
-                    <i class="fas fa-desktop" aria-hidden="true"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Memory RAM</p>
-                    <h5 class="font-weight-bolder">
-                        MB
-                    </h5>
-                    <p class="mb-0">
-                      <span class="text-success text-sm font-weight-bolder"> %</span>
-                      Used
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
-                    <i class="fas fa-memory" aria-hidden="true"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">DISC</p>
-                    <h5 class="font-weight-bolder">
-                       %
-                    </h5>
-                    <p class="mb-0">
-                      <span class="text-danger text-sm font-weight-bolder">%</span>
-                      Used
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
-                    <i class="fas fa-hdd" aria-hidden="true"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-uppercase font-weight-bold">TEMPERATURE</p>
-                    <h5 class="font-weight-bolder">
-                        C°
-                    </h5>
-                    <p class="mb-0">
-                      <span class="text-success text-sm font-weight-bolder"></span> 
-                    </p>
-                  </div>
-                </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
-                    <i class="fas fa-temperature-high" aria-hidden="true"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      
       </div>
+      <div class="container-fluid py-4">
+        <div class="row">
+          <div class="row">
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div class="card">
+                <div class="card-body p-3">
+                  <div class="row">
+                    <div class="col-8">
+                      <div class="numbers">
+                        <p class="text-sm mb-0 text-uppercase font-weight-bold">CPU</p>
+                        <h5 class="mb-0" id="cpuValue">  0% </h5>
+                        <p class="mb-0">
+                          <span class="text-success text-sm font-weight-bolder">PORCENTAJE DE USO</span>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="col-4 text-end">
+                      <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                        <i class="fas fa-desktop" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div class="card">
+                <div class="card-body p-3">
+                  <div class="row">
+                    <div class="col-8">
+                      <div class="numbers">
+                        <p class="text-sm mb-0 text-uppercase font-weight-bold">Memory RAM</p>
+                        <h5 class="mb-0"id="almcValue">
+                                 0%
+                        </h5>
+                        <p class="mb-0">
+                          <span class="text-success text-sm font-weight-bolder">PORCENTAJE DE USO</span>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="col-4 text-end">
+                      <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                        <i class="fas fa-memory" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div class="card">
+                <div class="card-body p-3">
+                  <div class="row">
+                    <div class="col-8">
+                      <div class="numbers">
+                        <p class="text-sm mb-0 text-uppercase font-weight-bold">DISC</p>
+                        <h5 class="mb-0" id="tptValue">
+                          0GB
+                        </h5>
+                        <p class="mb-0">
+                          <span class="text-danger text-sm font-weight-bolder">PORCENTAJE DE USO</span>
+                        
+                        </p>
+                      </div>
+                    </div>
+                    <div class="col-4 text-end">
+                      <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
+                        <i class="fas fa-hdd" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+              <div class="card">
+                <div class="card-body p-3">
+                  <div class="row">
+                    <div class="col-8">
+                      <div class="numbers">
+                        <p class="text-sm mb-0 text-uppercase font-weight-bold">CACHE</p>
+                        <h5 class="mb-0" id="cacheValue"> 0% </h5>
+                        <p class="mb-0">
+                          <span class="text-success text-sm font-weight-bolder">PORCENTAJE DE USO</span> 
+                        </p>
+                      </div>
+                    </div>
+                    <div class="col-4 text-end">
+                      <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
+                        <i class="fas fa-hdd" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="container-fluid py-4">
+          <div class="row">
+            <div class="row">
+              <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                  <div class="card-body p-3">
+                    <div class="row">
+                      <div class="col-8">
+                        <div class="numbers">
+                          <p class="text-sm mb-0 text-uppercase font-weight-bold">CPU</p>
+                          <h5 class="mb-0" id="cpuValue">  0% </h5>
+                          <p class="mb-0">
+                            <span class="text-success text-sm font-weight-bolder">PORCENTAJE DE USO</span>
+                          </p>
+                        </div>
+                      </div>
+                      <div class="col-4 text-end">
+                        <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                          <i class="fas fa-desktop" aria-hidden="true"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                  <div class="card-body p-3">
+                    <div class="row">
+                      <div class="col-8">
+                        <div class="numbers">
+                          <p class="text-sm mb-0 text-uppercase font-weight-bold">Memory RAM</p>
+                          <h5 class="mb-0"id="almcValue">
+                                   0%
+                          </h5>
+                          <p class="mb-0">
+                            <span class="text-success text-sm font-weight-bolder">PORCENTAJE DE USO</span>
+                          </p>
+                        </div>
+                      </div>
+                      <div class="col-4 text-end">
+                        <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                          <i class="fas fa-memory" aria-hidden="true"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                  <div class="card-body p-3">
+                    <div class="row">
+                      <div class="col-8">
+                        <div class="numbers">
+                          <p class="text-sm mb-0 text-uppercase font-weight-bold">DISC</p>
+                          <h5 class="mb-0" id="tptValue">
+                            0GB
+                          </h5>
+                          <p class="mb-0">
+                            <span class="text-danger text-sm font-weight-bolder">PORCENTAJE DE USO</span>
+                          
+                          </p>
+                        </div>
+                      </div>
+                      <div class="col-4 text-end">
+                        <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
+                          <i class="fas fa-hdd" aria-hidden="true"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-sm-6">
+                <div class="card">
+                  <div class="card-body p-3">
+                    <div class="row">
+                      <div class="col-8">
+                        <div class="numbers">
+                          <p class="text-sm mb-0 text-uppercase font-weight-bold">CACHE</p>
+                          <h5 class="mb-0" id="cacheValue"> 0% </h5>
+                          <p class="mb-0">
+                            <span class="text-success text-sm font-weight-bolder">PORCENTAJE DE USO</span> 
+                          </p>
+                        </div>
+                      </div>
+                      <div class="col-4 text-end">
+                        <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
+                          <i class="fas fa-hdd" aria-hidden="true"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="container-fluid py-4">
+            <div class="row">
+              <div class="row">
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                  <div class="card">
+                    <div class="card-body p-3">
+                      <div class="row">
+                        <div class="col-8">
+                          <div class="numbers">
+                            <p class="text-sm mb-0 text-uppercase font-weight-bold">CPU</p>
+                            <h5 class="mb-0" id="cpuValue">  0% </h5>
+                            <p class="mb-0">
+                              <span class="text-success text-sm font-weight-bolder">PORCENTAJE DE USO</span>
+                            </p>
+                          </div>
+                        </div>
+                        <div class="col-4 text-end">
+                          <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                            <i class="fas fa-desktop" aria-hidden="true"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                  <div class="card">
+                    <div class="card-body p-3">
+                      <div class="row">
+                        <div class="col-8">
+                          <div class="numbers">
+                            <p class="text-sm mb-0 text-uppercase font-weight-bold">Memory RAM</p>
+                            <h5 class="mb-0"id="almcValue">
+                                     0%
+                            </h5>
+                            <p class="mb-0">
+                              <span class="text-success text-sm font-weight-bolder">PORCENTAJE DE USO</span>
+                            </p>
+                          </div>
+                        </div>
+                        <div class="col-4 text-end">
+                          <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                            <i class="fas fa-memory" aria-hidden="true"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                  <div class="card">
+                    <div class="card-body p-3">
+                      <div class="row">
+                        <div class="col-8">
+                          <div class="numbers">
+                            <p class="text-sm mb-0 text-uppercase font-weight-bold">DISC</p>
+                            <h5 class="mb-0" id="tptValue">
+                              0GB
+                            </h5>
+                            <p class="mb-0">
+                              <span class="text-danger text-sm font-weight-bolder">PORCENTAJE DE USO</span>
+                            
+                            </p>
+                          </div>
+                        </div>
+                        <div class="col-4 text-end">
+                          <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
+                            <i class="fas fa-hdd" aria-hidden="true"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-sm-6">
+                  <div class="card">
+                    <div class="card-body p-3">
+                      <div class="row">
+                        <div class="col-8">
+                          <div class="numbers">
+                            <p class="text-sm mb-0 text-uppercase font-weight-bold">CACHE</p>
+                            <h5 class="mb-0" id="cacheValue"> 0% </h5>
+                            <p class="mb-0">
+                              <span class="text-success text-sm font-weight-bolder">PORCENTAJE DE USO</span> 
+                            </p>
+                          </div>
+                        </div>
+                        <div class="col-4 text-end">
+                          <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
+                            <i class="fas fa-hdd" aria-hidden="true"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
       <div class="row mt-4">
         <div class="col-lg-7 mb-lg-0 mb-4">
           <div class="card z-index-2 h-100">

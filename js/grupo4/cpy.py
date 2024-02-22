@@ -13,8 +13,8 @@ import getpass
 #Hive
 BROKER = 'broker.hivemq.com'
 PORT = 1883
-TOPIC_DATA = "pruebatopico"
-TOPIC_ALERT = "pruebatopico"
+TOPIC_DATA = "grupo4"
+TOPIC_ALERT = "grupo4"
 # generate client ID with pub prefix randomly
 CLIENT_ID = "python-mqtt-tcp-pub-sub-{id}".format(id=random.randint(0, 1000))
 FLAG_CONNECTED = 0
@@ -47,10 +47,15 @@ def connect_mqtt():
     client.connect(BROKER, PORT)
     return client
 
-#Enviar mensajes
-def publish(client,TOPIC,msg): 
-    msg = json.dumps(msg)
-    result = client.publish(TOPIC, msg)
+# Define la función publish aquí
+def publish(client, topic, message):
+    message_json = json.dumps(message)
+    result = client.publish(topic, message_json, qos=1)
+
+    if result[0] == 0:
+        print(f"Se envió mensaje: {message} al tema: {topic}")
+    else:
+        print(f"No se pudo enviar mensaje al tema: {topic}")
 
 
 #Envio al archivo en JavaScritp 
@@ -100,9 +105,14 @@ def run():
                 'ArqM' : arqma,
                 'Usr' : usua,
             }
-            #Al usar dos Json se sobre escribe por lo tanto se almacena en otra varaiable
             grftodo = json.dumps(dato)
-            publicar = client.publish("pruebatopico",grftodo)
+            # Usa la función publish aquí
+            try:
+                publish(client, "grupo4", grftodo)
+            except Exception as e:
+                print(f"Error al publicar mensaje: {e}")
+            else:
+                print("Mensaje publicado exitosamente")
         else:
             client.loop_stop()
 

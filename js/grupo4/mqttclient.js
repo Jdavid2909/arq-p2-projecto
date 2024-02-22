@@ -1,16 +1,12 @@
-/*################################################################################################*/
-/*####################################### CLIENTE MQTT ###########################################*/
-/*################################################################################################*/
-
-//var wsbroker = "0.tcp.sa.ngrok.io";
-var wsbroker = "broker.hivemq.com";
+//var wsbroker = "192.168.0.3";  //mqtt websocket enabled broker
 //var wsbroker = "localhost";
+var wsbroker = "broker.hivemq.com";
 
-//var wsport = 14792; // port for above
+//var wsport = 8083 // port for above
 var wsport = 1883; // port for above
+
 var client = new Paho.MQTT.Client(
 	wsbroker,
-	//Number(wsport),
 	Number(8000),
 	"myclientid_" + parseInt(Math.random() * 100, 10)
 );
@@ -21,96 +17,87 @@ client.onConnectionLost = function (responseObject) {
 
 /*################################################################################################*/
 /*####################################### LLEGA EL MENSAJE########################################*/
-/*################################################################################################*/
-let prevCPUValue = 0;
-let prevMemoryValue = 0;
-let prevDiskValue = 0;
-let prevRecepcionValue = 0;
+/*################################################################################################
+let dataCache =  esto lo almaceno en un etiqueta laben, o como mdoificar un equiqueta input con js y el uso del api
+*/
+let dataCPU = 0;
 
 client.onMessageArrived = function (message) {
 	let destination = message.destinationName;
-	if (destination === "probar_1") {
-        let response = JSON.parse(message.payloadString);
-        dataFormat = response;
-        let dataCPU = dataFormat.CPU;
-        let dataMemoria = dataFormat.Memoria;
-        let dataDisco = dataFormat.Disco;
-        let dataRecepcion = dataFormat.Recepcion;
-        
-        //info pc
-        document.getElementById("arquitecturaValue").innerText = response.Arquitectura;
-        document.getElementById("sistemaValue").innerText = response.Sistema;
-        document.getElementById("ramValue").innerText = response.Ram;
-        document.getElementById("procesadorValue").innerText = response.Procesador;
-        document.getElementById("almacenamientoValue").innerText = response.Almacenamiento;
+	if (destination === "grupo4") {
+		
+		let response = JSON.parse(message.payloadString);
+		dataFormat = response;
+		
+		let dataCPU = dataFormat.CPU;
+		let dataAlmc = dataFormat.Alc;
+		let dataTpt = dataFormat.Tpt;
+		let dataCache = dataFormat.Cache;		
+		let dataSist = dataFormat.Sist;
+		let dataPross = dataFormat.Pross;
+		let dataRamT = dataFormat.RamT;
+		let dataDiscoT = dataFormat.DiscoT;
+		let dataNucle = dataFormat.Nucle;
+		let dataArqM = dataFormat.ArqM;
+		let dataUsr = dataFormat.Usr;
+		
+		addData(
+			CPU,
+			parseFloat(dataCPU),
+		);
+		addDataAlmc(
+			Almacen,
+			parseFloat(dataAlmc),
+		);
+		addDataTemp(
+			Tempera,
+			parseFloat(dataTpt),
+		); 
 
-        // Calcular la diferencia con respecto al valor anterior
-        let diffCPU = dataCPU - prevCPUValue;
-        let diffMemory = dataMemoria - prevMemoryValue;
-        let diffDisk = dataDisco - prevDiskValue;
-        let diffRecepcion = dataRecepcion - prevRecepcionValue;
+		//Envio de valores estaticos
+		//CPU
+		let dateCPU = dataCPU + ' %';
+        document.getElementById('cpuValue').innerText = dateCPU;
+		//RAM
+		let dateAlmc = dataAlmc.toLocaleString() + ' %';
+		document.getElementById('almcValue').innerText = dateAlmc;
+		//Dico en uso
+		let dateTpt = dataTpt + ' GB';
+		document.getElementById('tptValue').innerText = dateTpt;
+		//Cache
+		let dateCache = dataCache.toLocaleString() + ' %';
+		document.getElementById('cacheValue').innerText = dateCache;
 
-        // Calcular el porcentaje de cambio
-        let percentageCPU = calculatePercentage(diffCPU, prevCPUValue);
-        let percentageMemory = calculatePercentage(diffMemory, prevMemoryValue);
-        let percentageDisk = calculatePercentage(diffDisk, prevDiskValue);
-        let percentageRecepcion = calculatePercentage(diffRecepcion, prevRecepcionValue);
-
-        // Actualizar los valores en tiempo real en la página
-        document.getElementById("cpuValue").innerText = dataCPU;
-        document.getElementById("memoryValue").innerText = dataMemoria;
-        document.getElementById("diskValue").innerText = dataDisco;
-        document.getElementById("RecepcionValue").innerText = dataRecepcion;
-
-        // Actualizar los porcentajes en la página
-        document.getElementById("cpuPercentage").innerHTML = getColoredPercentage(percentageCPU);
-        document.getElementById("memoryPercentage").innerHTML = getColoredPercentage(percentageMemory);
-        document.getElementById("diskPercentage").innerHTML = getColoredPercentage(percentageDisk);
-        document.getElementById("RecepcionPercentage").innerHTML = getColoredPercentage(percentageRecepcion);
-
-        // Actualizar los valores anteriores con los nuevos valores
-        prevCPUValue = dataCPU;
-        prevMemoryValue = dataMemoria;
-        prevDiskValue = dataDisco;
-        prevRecepcionValue = dataRecepcion;
-
-        // Cargar datos CPU, Memoria y Almacenamiento en las gráficas
-        addData(myChartCPU, dataCPU);
-        addData2(myChartMemory, dataMemoria);
-        addData3(myChartDisk, dataDisco);
-    }
+		//Especificaiones del computador
+		//Disco Duro Total
+		let dateDiscoT = dataDiscoT.toLocaleString() + ' GB';
+		document.getElementById('CDValue').innerText = dateDiscoT;
+		//Memoria Ram Total
+		let dateRamT = dataRamT.toLocaleString() + ' GB';
+		document.getElementById('RamTValue').innerText = dateRamT;
+		//Nucleos
+		document.getElementById('nucleValue').innerText = dataNucle;
+		//Sistema Operativo
+		let dateSist = dataSist.toLocaleString();
+		document.getElementById('sistValue').innerText = dateSist;
+		//Arquitectura del computador
+		let dateArqM= dataArqM.toLocaleString();
+		document.getElementById('arqmValue').innerText = dateArqM;
+		//Procesador
+		let datePross = dataPross.toLocaleString();
+		document.getElementById('prossValue').innerText = datePross;
+		//Usuario
+		let dateUsr = dataUsr.toLocaleString();
+		document.getElementById('usrValue').innerText = dateUsr;
+	}
 };
-
-// Función para calcular el porcentaje de cambio
-function calculatePercentage(diff, prevValue) {
-    if (prevValue === 0) {
-        return "0"; // Si el valor anterior es cero, el porcentaje de cambio es cero
-    }
-
-    let percentage = ((diff / prevValue) * 100).toFixed(2);
-    if (isFinite(percentage)) {
-        return percentage >= 0 ? "+" + percentage : percentage;
-    } else {
-        return "0";
-    }
-}
-// Función para obtener el porcentaje coloreado
-function getColoredPercentage(percentage) {
-    if (parseFloat(percentage) > 0) {
-        return '<span style="color: green;">' + percentage + '%</span>';
-    } else if (parseFloat(percentage) < 0) {
-        return '<span style="color: red;">' + percentage + '%</span>';
-    } else {
-        return percentage + '%';
-    }
-}
 
 var options = {
 	timeout: 3,
 	onSuccess: function () {
 		console.log("mqtt connected");
 		// Connection succeeded; subscribe to our topic, you can add multile lines of these
-		client.subscribe("probar_1", { qos: 1 });
+		client.subscribe("grupo4", { qos: 1 });
 	},
 	onFailure: function (message) {
 		console.log("Connection failed: " + message.errorMessage);
