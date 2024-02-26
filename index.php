@@ -1,2 +1,2 @@
-<?php require_once('./pages/grupo1.html')
+<?php require_once('./pages/grupo4.html')
 ?>
