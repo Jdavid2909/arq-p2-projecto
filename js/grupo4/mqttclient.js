@@ -1,14 +1,12 @@
 /*################################################################################################*/
 /*####################################### CLIENTE MQTT ###########################################*/
 /*################################################################################################*/
-
 //var wsbroker = "192.168.0.3";  //mqtt websocket enabled broker
 var wsbroker = "broker.hivemq.com";
 //var wsbroker = "localhost";
 //var wsbroker = "0.tcp.sa.ngrok.io";
 var chart_bars;
 var data;
-
 var wsport = 1883; // port for above
 //var wsport = 8083 // port for above
 //var wsport = 14792; // port for above
@@ -18,61 +16,52 @@ var client = new Paho.MQTT.Client(
 	Number(8000),
 	"myclientid_" + parseInt(Math.random() * 100, 10)
 );
-
-
-client.onConnectionLost = function (responseObject) {
-	console.log("connection lost: " + responseObject.errorMessage);
-
-	// Llamar a la función updateHtmlElements cada segundo
-	intervalId = setInterval(() => updateHtmlElements("1", dataFormat), 1000);
-}
-
-
-
 /*################################################################################################*/
 /*####################################### LLEGA EL MENSAJE########################################*/
 /*################################################################################################*/
 let chart;
 let dataFormat;
 let primero = 1;
-let computerElement;
-let computerName;
+let intervalId;
+
 client.onMessageArrived = function (message) {
-
-	let chart_bars;
-	let data;
-	// Check if data is a number before using toFixed()
-	if (typeof data === 'number') {
-		data = data.toFixed(2);
-	} else {
-		console.warn('No se puede convertir el valor en un número de punto fijo');
-		console.log(data); // Imprime la variable data en la consola
-	}
-
 	let destination = message.destinationName;
 	if (destination === "grupo4") {
-		dataFormat = JSON.parse(message.payloadString);
-		console.log(dataFormat); // Log the dataFormat object to the console
+		try {
+			dataFormat = JSON.parse(message.payloadString);
+			console.log(dataFormat); // Log the dataFormat object to the console
 
-		updateHtmlElements("1", dataFormat);
-		updateHtmlElements("2", dataFormat);
-		updateHtmlElements("3", dataFormat);
-		updateHtmlElements("4", dataFormat);
+			updateHtmlElements("1", dataFormat);
+			updateHtmlElements("2", dataFormat);
+			updateHtmlElements("3", dataFormat);
+			updateHtmlElements("4", dataFormat);
 
-		//Cargar datos CPU , Memoria y Almacenamiento
+			//Cargar datos CPU, Memoria y Almacenamiento
+			addData(chart, dataFormat.CPU);
+			addMemory(chart, dataFormat.Memory);
+			addDisco(chart, dataFormat.Disco);
 
-		addData(chart, dataFormat.CPU);
-		addMemory(chart, dataFormat.Memory);
-		addDisco(chart, dataFormat.Disco);
-
+			updateChart(dataFormat.frecuenciaRAM);
+		} catch (error) {
+			console.error('Error al procesar los datos recibidos:', error);
+		}
 	}
-
 };
 
 function enviarMensajeMQTT(mensajeJSON) {
 	let messageObj = new Paho.MQTT.Message(mensajeJSON);
 	messageObj.destinationName = "grupo4"; // Cambia al topic correcto
 	client.send(messageObj);
+}
+
+client.onConnected = function (responseObject) {
+	console.log("Connected");
+
+	drawRAMFrequencyChart();
+
+	if (intervalId) {
+		clearInterval(intervalId);
+	}
 }
 
 var options = {
@@ -95,33 +84,47 @@ function testMqtt() {
 }
 
 function initMqtt() {
-	client.connect(options);
+	client.connect({
+		onSuccess: function () {
+			console.log("mqtt connected");
+			client.subscribe("grupo4", {
+				qos: 1
+			});
+		},
+		onFailure: function (message) {
+			console.log("Connection failed: " + message.errorMessage);
+		},
+	});
 }
 
-function updateHtmlElements(computerName, data) {
-	const computerContainer = document.getElementById(`computer-row-${computerName}`);
+function updateHtmlElements(apiEndpoint, computerData) {
 
-	const dataCPUElement = document.getElementById("dataCPUElement");
-	dataCPUElement.textContent = data.CPU.toFixed(2) + "%";
+	const computerContainer = document.getElementById(`computer-row-${apiEndpoint}`);
 
-	const dataMemoryElement = document.getElementById("dataMemoryElement");
-	dataMemoryElement.textContent = data.Memory.toFixed(2) + "%";
+	if (computerData && computerData.cpu !== undefined) {
 
-	const dataDiscoElement = document.getElementById("dataDiscoElement");
-	dataDiscoElement.textContent = data.Disco + " GB";
+		const dataCPUElement = document.createElement("dataCPUElement");
+		dataCPUElement.textContent = `CPU: ${computerData.cpu.toFixed(2)}%`;
 
-	const dataTemperatura = document.getElementById("dataTemperatura");
-	dataTemperatura.textContent = "Temperatura: " + data.Temperatura + " °C";
+		const dataMemoryElement = document.createElement("dataMemoryElement");
+		dataMemoryElement.textContent = `Memory: ${computerData.memory.toFixed(2)}%`;
 
-	computerElement.appendChild(dataCPUElement);
-	computerElement.appendChild(dataMemoryElement);
-	computerElement.appendChild(dataDiscoElement);
+		const dataDiscoElement = document.createElement("dataDiscoElement");
+		dataDiscoElement.textContent = `Disk: ${computerData.disk} GB`;
 
-	if (computerContainer.firstChild) {
-		computerContainer.insertBefore(computerElement, computerContainer.firstChild);
+		const dataTemperatura = document.createElement("dataTemperatura");
+		dataTemperatura.textContent = `Temperature: ${computerData.temperature} °C`;
+
+		computerContainer.innerHTML = ''; // Limpiar el contenido previo
+
+		computerContainer.appendChild(dataCPUElement);
+		computerContainer.appendChild(dataMemoryElement);
+		computerContainer.appendChild(dataDiscoElement);
+		computerContainer.appendChild(dataTemperatura);
 	} else {
-		computerContainer.appendChild(computerElement);
+		console.error('Error: No se pueden actualizar los elementos HTML porque los datos de la computadora son indefinidos o no contienen la propiedad cpu.');
 	}
+
 
 }
 
@@ -152,39 +155,157 @@ function addDisco(chart, data) {
 	}
 }
 
-// Función para obtener la información de las otras tres computadoras
-function getComputerData() {
-	// Array de direcciones IP de las otras tres computadoras
-	const otherComputers = ['192.168.0.1', '192.168.1.2', '192.168.0.1', '192.168.0.1'];
+function drawRAMFrequencyChart() {
+	// Obtener el elemento canvas donde se dibujará el gráfico
+	var ctx = document.getElementById('chart_line').getContext('2d');
 
-	// Recorrer cada computadora y hacer la petición
-	otherComputers.forEach(computerIP => {
-		// Realizar la petición HTTP a la API de la computadora
-		fetch(`http://${computerIP}/api/computer-info`)
-			.then(response => response.json())
-			.then(computerData => {
-				// Procesar la información de la computadora
-				console.log(`Información de la computadora en ${computerIP}:`);
-				console.log(computerData);
-
-				// Enviar la información al broker MQTT
-				const mqttMessage = JSON.stringify({
-					computerIP,
-					cpu: computerData.cpu,
-					memory: computerData.memory,
-					disk: computerData.disk,
-					temperature: computerData.temperature
-				});
-				enviarMensajeMQTT(mqttMessage);
-
-				// Actualizar los elementos HTML con la información de la computadora
-				updateHtmlElements(computerData);
-			})
-			.catch(error => {
-				console.error(`Error al obtener la información de la computadora en ${computerIP}:`, error);
-			});
+	// Crear un nuevo gráfico de línea
+	var myChart = new Chart(ctx, {
+		type: 'line',
+		data: {
+			// Etiquetas para el eje X (tiempo)
+			labels: ['Tiempo 1', 'Tiempo 2', 'Tiempo 3', 'Tiempo 4', 'Tiempo 5'],
+			datasets: [{
+				// Nombre de la serie
+				label: 'Frecuencia de RAM',
+				// Datos de la frecuencia de RAM (aquí debes proporcionar tus propios datos)
+				data: [80, 70, 85, 90, 75],
+				// Color de la línea del gráfico
+				borderColor: 'blue',
+				// Ancho de la línea del gráfico
+				borderWidth: 1
+			}]
+		},
+		options: {
+			scales: {
+				y: {
+					// Configuración del eje Y (frecuencia de RAM)
+					beginAtZero: true
+				}
+			}
+		}
+	});
+}
+// Función para inicializar el gráfico
+function initChart() {
+	var ctx = document.getElementById('chart_line').getContext('2d');
+	chart = new Chart(ctx, {
+		type: 'line',
+		data: {
+			// Etiquetas para el eje X (tiempo)
+			labels: [],
+			datasets: [{
+				// Nombre de la serie
+				label: 'Frecuencia de RAM',
+				// Datos de la frecuencia de RAM inicialmente vacíos
+				data: [],
+				// Color de la línea del gráfico
+				borderColor: 'blue',
+				// Ancho de la línea del gráfico
+				borderWidth: 1
+			}]
+		},
+		options: {
+			scales: {
+				y: {
+					// Configuración del eje Y (frecuencia de RAM)
+					beginAtZero: true
+				}
+			}
+		}
 	});
 }
 
-// Llamar a la función para obtener la información de las otras tres computadoras
-getComputerData();
+// Función para actualizar el gráfico con los nuevos datos
+function updateChart(data) {
+	if (chart && chart.data && chart.data.datasets && Array.isArray(chart.data.datasets)) {
+		// Agregar una nueva etiqueta de tiempo al eje X
+		const timeLabel = new Date().toLocaleTimeString();
+		chart.data.labels.push(timeLabel);
+
+		// Agregar el nuevo dato de la frecuencia de RAM al conjunto de datos
+		chart.data.datasets[0].data.push(data);
+
+		// Limitar la cantidad de etiquetas en el eje X para mantener solo las últimas 5
+		if (chart.data.labels.length > 5) {
+			chart.data.labels.shift(); // Eliminar la primera etiqueta
+			chart.data.datasets[0].data.shift(); // Eliminar el primer dato
+		}
+
+		// Actualizar el gráfico
+		chart.update();
+	} else {
+		console.error("Error: El objeto chart no está definido correctamente.");
+	}
+}
+
+// Llamar a initChart una vez que la página esté lista para inicializar el gráfico
+document.addEventListener('DOMContentLoaded', function () {
+	initChart();
+});
+
+// Función para obtener y enviar los datos de las computadoras a través del API
+async function getAndSendDataFromAPIs(computerAPIs) {
+	for (const apiEndpoint of computerAPIs) {
+		try {
+			async function obtenerDatosCPU(apiEndpoint) {
+				try {
+					const response = await fetch(apiEndpoint + '/cpu');
+					if (!response.ok) {
+						throw new Error('Error al obtener datos de CPU: ' + response.statusText);
+					}
+					const data = await response.json();
+					return data;
+				} catch (error) {
+					throw new Error('Error al obtener datos de CPU: ' + error.message);
+				}
+			}
+
+			async function obtenerDatosMemoria(apiEndpoint) {
+				try {
+					const response = await fetch(apiEndpoint + '/memoria');
+					if (!response.ok) {
+						throw new Error('Error al obtener datos de memoria: ' + response.statusText);
+					}
+					const data = await response.json();
+					return data;
+				} catch (error) {
+					throw new Error('Error al obtener datos de memoria: ' + error.message);
+				}
+			}
+
+			async function obtenerDatosDisco(apiEndpoint) {
+				try {
+					const response = await fetch(apiEndpoint + '/disco');
+					if (!response.ok) {
+						throw new Error('Error al obtener datos de disco: ' + response.statusText);
+					}
+					const data = await response.json();
+					return data;
+				} catch (error) {
+					throw new Error('Error al obtener datos de disco: ' + error.message);
+				}
+			}
+
+
+			const dataCPUElement = await obtenerDatosCPU(apiEndpoint);
+			const dataMemoryElement = await obtenerDatosMemoria(apiEndpoint);
+			const dataDiscoElement = await obtenerDatosDisco(apiEndpoint);
+
+			// Actualizar elementos HTML con los datos obtenidos
+			updateHtmlElements(apiEndpoint, {
+				cpu: dataCPUElement,
+				memory: dataMemoryElement,
+				disk: dataDiscoElement
+			});
+
+			// Luego puedes enviar mensajes MQTT u otras acciones necesarias
+
+		} catch (error) {
+			console.error(`Error al obtener datos de ${apiEndpoint}:`, error);
+		}
+	}
+}
+
+// Llamar a la función para obtener y enviar los datos de las computadoras a través del API cada segundos
+setInterval(() => getAndSendDataFromAPIs(['http://localhost:3000']), 1000);
